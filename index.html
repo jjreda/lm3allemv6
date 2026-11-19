@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>L'M3allem — Marrakech Street Food</title>
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#3b1710">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{margin:0;height:100%;background:#1d0a06;font-family:'Trebuchet MS',system-ui,sans-serif;color:#fff3df;overflow:hidden;touch-action:manipulation}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+svg.si{width:1em;height:1em;vertical-align:-.12em}b.em{font-weight:400;font-style:normal}
+#app{max-width:480px;height:100dvh;margin:auto;position:relative;overflow:hidden;background:#3b1710}
+.scr{position:absolute;inset:0;display:none;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.scr.on{display:flex}
+.bg{background:linear-gradient(#3b171066,#1d0a06ee),url(market.jpg) 52% 30%/cover}
+.btn{background:linear-gradient(#f5b82e,#d98b12);color:#3b1710;font-weight:800;font-size:18px;padding:14px 22px;border-radius:16px;box-shadow:0 4px 0 #8a4f08;margin:6px 0}
+.btn.alt{background:linear-gradient(#2aa5a0,#17706d);color:#fff;box-shadow:0 4px 0 #0c4745}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #8a4f08}.btn:disabled{filter:grayscale(1);opacity:.5}
+#title{align-items:center;justify-content:flex-end;padding-bottom:36px;text-align:center}
+#title h1{font-size:52px;margin:0;color:#f5b82e;text-shadow:0 4px 0 #8a2b12,0 0 24px #ffb34799;letter-spacing:1px}
+#title h2{margin:0 0 6px;font-size:30px}#title p{margin:0 0 16px;opacity:.85}#title .btn{width:240px}
+.hd2{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;font-weight:800;font-size:20px;background:#2a0f0a}
+.hd2 .btn{padding:6px 14px;font-size:15px;margin:0}
+.grid{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+.card{display:flex;align-items:center;gap:14px;background:#4d2016;border:2px solid #f5b82e55;border-radius:18px;padding:12px;text-align:left;width:100%;flex:none}
+.card .em2{font-size:36px}.card b{font-size:17px;display:block}.card small{opacity:.8;font-size:12px}.card.lock{opacity:.45}
+#hud{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#2a0f0a;font-weight:800;font-size:15px}
+#hud .rep{flex:1;height:12px;background:#0006;border-radius:8px;overflow:hidden}#hud .rep i{display:block;height:100%;background:linear-gradient(90deg,#d62f2f,#f5b82e,#3fbf5f);transition:width .3s}
+#hud button{background:#f5b82e;color:#3b1710;border-radius:10px;padding:4px 10px;font-weight:800}
+#scene{flex:0 0 42%;position:relative;overflow:hidden;background:#4a2a5c}
+#bg{position:absolute;inset:0;width:100%;height:100%}
+.ln{animation:fl 2.2s ease-in-out infinite alternate}@keyframes fl{from{opacity:.5}to{opacity:1}}
+.wk{position:absolute;filter:brightness(.5) saturate(.7);animation:wk linear infinite}
+@keyframes wk{from{transform:translateX(-50px)}to{transform:translateX(540px)}}
+#chef{position:absolute;left:50%;bottom:24%;height:56%;transform:translateX(-50%);transform-origin:50% 100%;animation:bob 2.6s ease-in-out infinite;filter:drop-shadow(0 4px 6px #0007)}
+@keyframes bob{50%{transform:translateX(-50%) scaleY(1.025)}}
+#chef.cheer{animation:cheer .6s}@keyframes cheer{30%{transform:translateX(-50%) translateY(-14px) rotate(-3deg)}65%{transform:translateX(-50%) rotate(3deg)}}
+#chef.oops{animation:oops .5s}@keyframes oops{25%{transform:translateX(-50%) rotate(-4deg)}75%{transform:translateX(-50%) rotate(4deg)}}
+#say{position:absolute;top:6px;left:8px;right:8px;background:#fff3dff2;color:#3b1710;border-radius:14px;padding:6px 10px;display:none;align-items:center;gap:8px;font-weight:800;font-size:15px;z-index:5;box-shadow:0 4px 12px #0005}
+#say.on{display:flex;animation:pop .25s}#say b{font-size:26px;font-weight:400}#say small{display:block;font-size:13px;opacity:.75}
+#custs{position:absolute;left:0;right:0;bottom:0;display:flex;gap:5px;padding:6px;align-items:flex-end;z-index:3}
+.cust{flex:1;min-width:0;background:#3b1710e8;border:2px solid #f5b82e66;border-radius:14px;padding:3px 3px 4px;text-align:center;position:relative;transition:transform .15s}
+.cust.sel{border-color:#fff;box-shadow:0 0 14px #f5b82e}.cust.in{animation:wi .5s ease-out}
+.cust.talking .hd{box-shadow:0 0 0 3px #3fbf5f,0 0 14px #3fbf5f;animation:talkPulse .35s ease-in-out infinite alternate!important}
+@keyframes talkPulse{from{transform:scale(1) translateY(0)}to{transform:scale(1.08) translateY(-3px)}}
+@keyframes wi{from{transform:translateY(40px) scale(.6);opacity:0}}
+.av{position:relative;height:52px;display:flex;justify-content:center}
+.av .hd{position:absolute;top:0;width:48px;height:48px;border-radius:50%;overflow:hidden;border:2px solid #f5b82e;z-index:1;line-height:1;transform-origin:50% 90%;background:#2a0f0a;display:flex;align-items:center;justify-content:center}
+.av .hd img{width:100%;height:100%;object-fit:cover;display:block}
+.av .bd{position:absolute;bottom:0;width:48px;height:20px;border-radius:24px 24px 6px 6px;background:var(--c)}
+.av .bd::before{content:'';position:absolute;left:50%;top:-2px;width:16px;height:8px;border-radius:0 0 12px 12px;background:#0003;transform:translateX(-50%)}
+.mood{position:absolute;right:2px;top:-3px;font-style:normal;font-size:16px;z-index:2;text-shadow:0 1px 2px #000}
+.cust.m1 .hd{animation:sway 1.8s ease-in-out infinite alternate}.cust.m3 .hd{animation:tilt .5s ease-in-out infinite alternate}.cust.m4 .hd{animation:shk .18s infinite}
+@keyframes sway{to{transform:rotate(5deg)}}@keyframes tilt{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}@keyframes shk{50%{transform:translateX(3px)}}
+.pb{height:6px;background:#0007;border-radius:5px;overflow:hidden;margin:3px 0}.pb b{display:block;height:100%;width:100%}
+.rn{font-size:10px;font-weight:800;opacity:.85;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ord{display:flex;flex-wrap:wrap;justify-content:center;gap:1px;font-size:16px}.ord .no{opacity:.7;font-size:12px}
+.ghost{pointer-events:none}.ghost.gok{animation:gok .7s forwards}.ghost.gbad{animation:gbad .7s forwards}
+@keyframes gok{30%{transform:translateY(-20px) scale(1.1)}to{transform:translateY(-60px) scale(.7);opacity:0}}@keyframes gbad{to{transform:translateX(90px) rotate(18deg);opacity:0}}
+#work{flex:1;display:flex;flex-direction:column;padding:8px 10px;gap:6px;background:repeating-linear-gradient(45deg,#4d2016 0 14px,#46201a 14px 28px);min-height:0}
+#plateRow{display:flex;align-items:center;gap:10px}#pw{position:relative;flex:none}
+#plate{width:92px;height:92px;border-radius:50%;background:radial-gradient(#fff3df 55%,#d9c9a8 56%,#fff3df 62%);border:3px solid #2aa5a0;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;font-size:25px;padding:8px}
+#plate>span{animation:pop .25s;line-height:1}@keyframes pop{from{transform:scale(.3)}to{transform:scale(1)}}
+.steam{position:absolute;left:50%;top:-4px;width:40px;transform:translateX(-50%);pointer-events:none;display:none}.steam.on{display:block}
+.steam i{position:absolute;bottom:0;width:8px;height:8px;border-radius:50%;background:#fffd;filter:blur(3px);animation:st 1.6s infinite}.steam i:nth-child(2){left:14px;animation-delay:.5s}.steam i:nth-child(3){left:28px;animation-delay:1s}
+@keyframes st{from{transform:translateY(0);opacity:.8}to{transform:translateY(-28px) scale(2);opacity:0}}
+#pname{flex:1;font-size:13px;font-weight:700;min-height:40px}
+#ings{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;flex:1;align-content:start;overflow:auto}
+.lbl{grid-column:1/-1;font-size:12px;opacity:.85;margin-top:2px;font-weight:700}
+.ing{position:relative;overflow:hidden;background:#fff3df;color:#3b1710;border-radius:12px;padding:5px 2px;display:flex;flex-direction:column;align-items:center;box-shadow:0 3px 0 #b08a55}
+.ing s{position:absolute;left:0;bottom:0;height:100%;width:0;background:#f5b82e88}.ing .ie{font-size:28px;position:relative;line-height:1.1}.ing .in{font-size:11px;font-weight:800;position:relative}
+.ing.used{opacity:.4}.ing:active{transform:translateY(2px)}
+#acts{display:flex;gap:8px}#acts .btn{flex:1;margin:0;padding:12px}
+.fx{position:absolute;font-weight:900;font-size:20px;color:#ffe27a;text-shadow:0 2px 0 #000;pointer-events:none;animation:up 1.1s forwards;z-index:9;transform:translateX(-50%);white-space:nowrap}
+@keyframes up{to{transform:translate(-50%,-60px);opacity:0}}
+.fly{position:absolute;font-size:44px;pointer-events:none;z-index:9;transform:translate(-50%,-50%);transition:transform .55s ease-in,opacity .55s}
+#ov,#set{position:absolute;inset:0;background:#000b;display:none;flex-direction:column;align-items:center;justify-content:center;gap:4px;z-index:20}
+#set{z-index:30}#ov.on,#set.on{display:flex}#ov .btn{width:220px}
+.pn{background:#4d2016;border:2px solid #f5b82e66;border-radius:20px;padding:18px;width:min(86%,340px);display:flex;flex-direction:column;gap:12px}.pn h2{margin:0;text-align:center}
+.pn label{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}.pn input[type=range]{flex:1;accent-color:#f5b82e}.pn .btn{margin:0}
+.res{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;gap:6px}
+.res h1{font-size:34px;margin:0;color:#f5b82e}.res .big{font-size:60px}.res .btn{width:240px}
+.up{display:flex;align-items:center;gap:10px;background:#4d2016;border-radius:16px;padding:12px;border:2px solid #2aa5a055}.up .em2{font-size:34px}.up div{flex:1;text-align:left;font-size:13px}.up b{font-size:16px;display:block}.up .btn{margin:0;padding:8px 12px;font-size:15px}
+</style></head><body>
+<div id="app">
+<section id="title" class="scr bg on"><h1>L'M3ALLEM</h1><h2>المعلم</h2><p>Marrakech Street Food 🇲🇦</p>
+<button class="btn" data-go="sel">▶ Play · لعب</button><button class="btn alt" data-go="shop">🏮 Stall Shop</button><button class="btn alt" data-go="set">⚙ Settings</button><p id="tb" style="margin-top:12px;font-size:13px"></p></section>
+<section id="sel" class="scr"><div class="hd2"><span>Choose your recipe</span><button class="btn alt" data-go="title">⬅</button></div><div class="grid" id="lvs"></div></section>
+<section id="shop" class="scr"><div class="hd2"><span>🏮 Stall Shop</span><span id="sm"></span><button class="btn alt" data-go="title">⬅</button></div><div class="grid" id="ups"></div></section>
+<section id="game" class="scr">
+<div id="hud"><span id="hm">💰0</span><span class="rep"><i id="hr"></i></span><span id="hg">0/8</span><button data-go="pause">⏸</button></div>
+<div id="scene"><svg id="bg" viewBox="0 0 400 360" preserveAspectRatio="xMidYMid slice"></svg><div id="wks"></div><img id="chef" src="chef.png" alt=""><div id="say"></div><div id="custs"></div></div>
+<div id="work"><div id="plateRow"><div id="pw"><div class="steam" id="steam"><i></i><i></i><i></i></div><div id="plate"></div></div><div id="pname"></div></div><div id="ings"></div>
+<div id="acts"><button class="btn alt" id="bin">🗑️ Clear</button><button class="btn" id="serve">SERVE ✅</button></div></div>
+<div id="ov"></div></section>
+<section id="res" class="scr"></section>
+<div id="set"><div class="pn"><h2>⚙ Settings</h2>
+<label>🎵 Music <input type="range" id="vm" min="0" max="100"></label>
+<label>🔊 Effects <input type="range" id="vs" min="0" max="100"></label>
+<label>🗣️ Darija voices <input type="checkbox" id="vv"></label>
+<button class="btn" data-go="setx">Done</button></div></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+/* ---------- custom SVG icons for key ingredients, emoji for the rest ---------- */
+const IC={
+bread:`<ellipse cx="24" cy="27" rx="21" ry="12" fill="#c98a35" transform="rotate(-18 24 27)"/><ellipse cx="24" cy="24" rx="19" ry="11" fill="#e8b45e" transform="rotate(-18 24 24)"/><path d="M11 29 Q24 20 37 17" stroke="#fff0c9" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M13 32 Q24 24 36 20" stroke="#b9792a" stroke-width="1.2" fill="none"/>`,
+kasher:`<circle cx="17" cy="20" r="12" fill="#f4a8ad"/><circle cx="31" cy="24" r="12" fill="#f8b9bd"/><circle cx="22" cy="32" r="12" fill="#f4a1a8"/><circle cx="20" cy="30" r="1.8" fill="#e5868f" opacity=".7"/><circle cx="30" cy="21" r="1.5" fill="#e5868f" opacity=".7"/><g fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="1.3"><circle cx="17" cy="20" r="11"/><circle cx="31" cy="24" r="11"/><circle cx="22" cy="32" r="11"/></g>`,
+olives:`<ellipse cx="17" cy="19" rx="11" ry="9" fill="#8fa83a" transform="rotate(-20 17 19)"/><ellipse cx="13" cy="15" rx="4" ry="2" fill="#e7f0a3" opacity=".75" transform="rotate(-20 13 15)"/><circle cx="21" cy="21" r="3" fill="#d6312e"/><ellipse cx="32" cy="31" rx="11" ry="9" fill="#a0b543" transform="rotate(25 32 31)"/><ellipse cx="29" cy="27" rx="4" ry="2" fill="#eef6b0" opacity=".75" transform="rotate(25 29 27)"/><circle cx="36" cy="33" r="3" fill="#d6312e"/><ellipse cx="14" cy="36" rx="9" ry="7.5" fill="#7c9332" transform="rotate(10 14 36)"/><ellipse cx="11" cy="33" rx="3" ry="1.5" fill="#dbe896" opacity=".7"/>`,
+oil:`<path d="M19 3h9v3l-2 3v6c9 3 11 9 11 17 0 9-5 13-13 13s-13-4-13-13c0-8 2-14 11-17V9l-2-3z" fill="#d7edf0" fill-opacity=".55" stroke="#fff" stroke-width="1.3"/><path d="M12 31c0-7 3-11 10-13h2c7 2 10 6 10 13 0 8-4 11-11 11s-11-3-11-11z" fill="#e8b81d"/><path d="M14 32c0-5 2-8 6-10" stroke="#fff6b0" stroke-width="2.2" fill="none" opacity=".85"/><path d="M36 20q9 1 7 12" stroke="#fff" stroke-width="2.5" fill="none" opacity=".7"/>`,
+sauce:`<path d="M5 23q19 30 38 0z" fill="#c9a37a"/><ellipse cx="24" cy="23" rx="19" ry="6" fill="#a8421f"/><ellipse cx="19" cy="22" rx="7" ry="1.8" fill="#dd7a45" opacity=".7"/>`,
+sugar:`<ellipse cx="24" cy="34" rx="17" ry="8" fill="#d9c9a8"/><rect x="14" y="22" width="9" height="10" fill="#fff" stroke="#d0d0d0" stroke-width="1"/><rect x="23" y="20" width="10" height="11" fill="#f5f5f5" stroke="#d0d0d0" stroke-width="1"/><rect x="18" y="13" width="9" height="10" fill="#fff" stroke="#d0d0d0" stroke-width="1"/>`};
+IC.bread2=IC.bread;
+const ic=k=>IC[k]?`<svg class="si" viewBox="0 0 48 48">${IC[k]}</svg>`:`<b class="em">${ING[k][1]}</b>`;
+/* [name, emoji, cook seconds] */
+const ING={bread:['Khobz','🥯'],bread2:['Khobz','🥯'],tots:['Maakouda','🥔',1.6],harissa:['Harissa','🌶️'],olives:['Zitoun','🟢'],egg:['Bayda','🍳',2.2],kasher:['Kasher','🥓'],
+bowl:['Sahn','🍽️'],beans:['Loubia','🥘'],t9alia:['T9alia','🍲'],meat:['Lham ras','🍖',2],sauce:['Mri9a','🥫'],cumin:['Kamoun','🧂'],soup:['Bissara','🥣'],oil:['Zit zitoun','💧'],
+sfenj:['Sfenj','🍩',2],sugar:['Sokkar','🧊'],honey:['3asel','🍯'],harira:['Harira','🍜'],dates:['Tmar','🌰'],lemon:['Hamed','🍋'],glass:['Kass','🥃'],tea:['Atay','🍵'],mint:['Na3na3','🌿'],
+kefta:['Kefta','🥩',2.2],tomato:['Matisha','🍅'],onion:['Besla','🧅'],fries:['Frites','🍟'],sardine:['Sardin','🐟',2.2],chermoula:['Chermoula','🥬'],merguez:['Merguez','🌭',2],skewer:['Brochette','🍢',2.4],salad:['Salata','🥗'],
+tanjia:['Tanjia','🏺',2.5]};
+const HOT=['tots','egg','meat','soup','beans','t9alia','sfenj','harira','tea','kefta','sardine','merguez','skewer','fries','tanjia'];
+const R=[
+{n:'Maakouda',ar:'معقودة',e:'🥔',d:'Potato tots sandwich',b:['bread','tots'],x:['harissa','olives','egg','kasher'],price:14},
+{n:'Loubia',ar:'لوبيا',e:'🥘',d:'White bean stew',b:['bowl','beans'],x:['t9alia','harissa'],price:12},
+{n:'Baolo',ar:'باولو',e:'🍖',d:'Steamed sheep-head sandwich',b:['bread','meat','sauce'],x:['cumin'],price:18},
+{n:'Tanjia',ar:'طنجية',e:'🏺',d:'Marrakech clay-pot beef with bread & tea',b:['bowl','tanjia','oil','cumin'],x:['bread','tea','mint','sugar'],price:26},
+{n:'Bissara',ar:'بصارة',e:'🥣',d:'Fava bean soup',b:['bowl','soup'],x:['oil','cumin','bread2'],price:10},
+{n:'Sfenj',ar:'سفنج',e:'🍩',d:'Fried doughnut',b:['sfenj'],x:['sugar','honey'],price:8},
+{n:'Harira',ar:'حريرة',e:'🍜',d:'Tomato & lentil soup',b:['bowl','harira'],x:['dates','lemon'],price:12},
+{n:'Atay',ar:'أتاي',e:'🍵',d:'Mint tea',b:['glass','tea','mint'],x:['sugar'],price:9},
+{n:'Kefta',ar:'كفتة',e:'🥩',d:'Kefta sandwich',b:['bread','kefta'],x:['tomato','onion','fries','harissa'],price:20},
+{n:'Sardine',ar:'سردين',e:'🐟',d:'Sardine sandwich',b:['bread','sardine','chermoula'],x:['olives','tomato','harissa','cumin'],price:22}];
+const GOAL=[8,9,10,11,12,13,14,15,16,18];
+
+/* Cropped customer portraits with distinct vocal pitch, timbre & age/gender character */
+const FA=[
+  {e:'cust_1.png', fb:'👴🏽', p:.78, rate:.94, c:'#6fa8dc', g:'m', role:'elder'},
+  {e:'cust_2.png', fb:'🧕🏽', p:1.28, rate:1.04, c:'#3d85c6', g:'f', role:'woman'},
+  {e:'cust_3.png', fb:'👵🏽', p:1.12, rate:.92, c:'#8e2430', g:'f', role:'grandma'},
+  {e:'cust_4.png', fb:'👦🏽', p:1.48, rate:1.12, c:'#a89f91', g:'m', role:'kid'},
+  {e:'cust_5.png', fb:'👳🏽', p:.86, rate:.98, c:'#cc2929', g:'m', role:'guerrab'},
+  {e:'cust_6.png', fb:'👴🏽', p:.74, rate:.90, c:'#d8d0bd', g:'m', role:'elder'},
+  {e:'cust_7.png', fb:'🧔🏽', p:.88, rate:1.0, c:'#2b6cb0', g:'m', role:'man'},
+  {e:'cust_8.png', fb:'👨🏽', p:1.05, rate:1.05, c:'#e2e8f0', g:'m', role:'youth'},
+  {e:'cust_9.png', fb:'👨🏽', p:1.02, rate:1.03, c:'#5a6b53', g:'m', role:'youth'},
+  {e:'cust_10.png', fb:'👩🏽', p:1.34, rate:1.06, c:'#d53f8c', g:'f', role:'woman'},
+  {e:'cust_11.png', fb:'👨🏽', p:1.08, rate:1.04, c:'#4a5568', g:'m', role:'youth'},
+  {e:'cust_12.png', fb:'👳🏽', p:.82, rate:.96, c:'#2c5282', g:'m', role:'man'}
+];
+
+/* Authentic Moroccan Darija lines (Transliteration, Arabic Script, Vocal Phonetic Script for clear Darija pronunciation) */
+const LN={
+  h:[
+    ["Tbarkellah 3la l'M3allem!","تبارك الله على المعلم!","تْبَارْكْ اللّٰهْ عَلَى الْمْعَلّْمْ!"],
+    ["Allah ya3tik seha!","الله يعطيك الصحة!","اللّٰهْ يْعْطِيكْ الصّْحّة!"],
+    ["Wa3er had lmakla!","واعر هاد المكلة!","وَاعْرْ هَادْ الْمَاكْلَة!"],
+    ["B'saha w raha a sidi!","بالصحة والراحة آ سيدي!","بْالصّْحّة وْالرّاحَة آ سِيدِي!"]
+  ],
+  i:[
+    ["Sserbina a l'M3allem!","سرّبينا آ المعلم!","سْرّْبِينَا آ الْمْعَلّْمْ!"],
+    ["Yallah a khouya, rani zerban!","يالله آ خويا، راني زربان!","يَالّٰهْ آ خُويَا، رَانِي زْرْبَانْ!"],
+    ["Chwia d'serba 3afak!","شويا د السربة عافاك!","شْوِيّا دْ السّْرْبَة عَافَاكْ!"]
+  ],
+  a:[
+    ["Ach hadchi a sidi?!","آش هادشي آ سيدي؟!","آشْ هَادْشِي آ سِيدِي؟!"],
+    ["Machi hadchi li tlabt!","ماشي هادشي لي طلبت!","مَاشِي هَادْشِي لِّي طْلْبْتْ!"]
+  ],
+  nh:[
+    ["Bla l'harissa 3afak!","بلا الهريسة عافاك!","بْلَا الْهْرِيسَة عَافَاكْ!"]
+  ],
+  fz:[
+    ["Fin howa zit zitoun?","فين هو زيت الزيتون؟","فِينْ هُوَّ زِيتْ الزِّيتُونْ؟"]
+  ],
+  zc:[
+    ["Zid chwia dial l'har!","زيد شويا ديال الحار!","زِيدْ شْوِيّا دْيَالْ الْحَارْ!"]
+  ],
+  g:[
+    ["Salam a l'M3allem!","سلام آ المعلم!","سَلَامْ آ الْمْعَلّْمْ!"],
+    ["Salam o alaykum, 3tini wahed!","السلام عليكم، عطيني واحد!","السَّلَامُ عَلَيْكُمْ، عْطِينِي وَاحْدْ!"],
+    ["Sbah l'khir a l'M3allem!","صباح الخير آ المعلم!","صْبَاحْ الْخِيرْ آ الْمْعَلّْمْ!"],
+    ["Marhba, wjed lina chi haja zwina!","مرحبا، وجد لينا شي حاجة زوينة!","مْرْحْبَا، وْجّْدْ لِينَا شِي حَاجَة زْوِينَة!"]
+  ],
+  to:[
+    ["Safi, mchit! B'slama!","صافي، مشيت! بالسلامة!","صَافِي، مْشِيتْ! بْسْلَامَة!"]
+  ]
+};
+
+/* ---------- save ---------- */
+const SK='lm3allem_v4';
+let S={money:0,unl:1,best:[],up:{fry:0,zel:0,lamp:0},set:{music:.5,sfx:.8,voice:true}};
+try{const j=JSON.parse(localStorage.getItem(SK)||'null');if(j)S=Object.assign(S,j)}catch(e){}
+S.up=Object.assign({fry:0,zel:0,lamp:0},S.up);S.set=Object.assign({music:.5,sfx:.8,voice:true},S.set);S.best=Array.from({length:10},(_,i)=>(S.best&&S.best[i])||0);
+const sv=()=>{try{localStorage.setItem(SK,JSON.stringify(S))}catch(e){}};
+
+/* ---------- audio & Enhanced Darija Voice Queue (Sequential, never overlapping) ---------- */
+let AC,MB,SB,NB;
+function ac(){if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)();MB=AC.createGain();SB=AC.createGain();MB.connect(AC.destination);SB.connect(AC.destination);vol();
+ NB=AC.createBuffer(1,AC.sampleRate*.2,AC.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+ if(AC.state==='suspended')AC.resume();return AC}
+function vol(){if(MB){MB.gain.value=S.set.music*.5;SB.gain.value=S.set.sfx}}
+function beep(f,d=.09,t='sine',v=.08,at=0){try{const a=ac(),s=a.currentTime+at,o=a.createOscillator(),g=a.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(g);g.connect(SB);o.start(s);o.stop(s+d)}catch(e){}}
+const jingle=(a,t='triangle')=>a.forEach((f,i)=>beep(f,.14,t,.09,i*.11));
+function noise(d,hp,v,at=0,bus){const a=ac(),s=a.currentTime+at,n=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();n.buffer=NB;f.type='highpass';f.frequency.value=hp;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(.001,s+d);n.connect(f);f.connect(g);g.connect(bus||SB);n.start(s);n.stop(s+d)}
+
+/* Expressive vocal formant synthesis layer for authentic Moroccan warmth & intonation */
+function vox(f0,dur,f1,f2,v,gl=1,at=0){try{const a=ac(),t=a.currentTime+at,o=a.createOscillator(),b=a.createBiquadFilter(),g=a.createGain(),l=a.createOscillator(),lg=a.createGain();
+ o.type='sawtooth';o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f0*gl,t+dur);b.type='bandpass';b.frequency.setValueAtTime(f1,t);b.frequency.linearRampToValueAtTime(f2,t+dur);b.Q.value=4.5;
+ l.frequency.value=5.5;lg.gain.value=f0*.025;l.connect(lg);lg.connect(o.frequency);g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(v,t+.03);g.gain.exponentialRampToValueAtTime(.001,t+dur);
+ o.connect(b);b.connect(g);g.connect(SB);o.start(t);l.start(t);o.stop(t+dur+.02);l.stop(t+dur+.02)}catch(e){}}
+function expr(k,p){const f=145*p;
+ if(k==='happy'){vox(f*1.2,.16,800,1250,.75,1.25);vox(f*1.45,.25,720,1650,.75,1.28,.18)}
+ else if(k==='greet')vox(f*1.1,.2,650,1150,.6,1.12);
+ else if(k==='imp'){noise(.04,3500,.2);noise(.04,3500,.2,.13);vox(f,.26,520,420,.6,.82,.28)}
+ else if(k==='angry'){vox(f*.82,.38,550,450,.85,.62);vox(f*.72,.26,500,400,.75,.72,.3)}
+ else if(k==='sigh')vox(f*1.25,.45,900,500,.6,.58)}
+
+/* Pre-cached / Pre-recorded Darija Audio Clips & Sequential Voice Queue */
+const AUDIO_CACHE = new Map();
+let VOICE_QUEUE = [];
+let IS_SPEAKING = false;
+let ACTIVE_AUDIO = null;
+
+function clearVoiceQueue(){
+  VOICE_QUEUE = [];
+  IS_SPEAKING = false;
+  if(ACTIVE_AUDIO){
+    try{ ACTIVE_AUDIO.pause(); ACTIVE_AUDIO.currentTime = 0; }catch(e){}
+    ACTIVE_AUDIO = null;
+  }
+  try{ window.speechSynthesis && speechSynthesis.cancel(); }catch(e){}
+  document.querySelectorAll('.cust.talking').forEach(el => el.classList.remove('talking'));
+}
+
+/* Preload all Darija phrases as ready-to-play audio buffers/elements on startup */
+function preloadDarijaVoices(){
+  const allLines = Object.values(LN).flat();
+  allLines.forEach(line => {
+    const speakText = line[2] || line[1];
+    if(!AUDIO_CACHE.has(speakText)){
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(speakText)}&tl=ar&client=tw-ob`;
+      const aud = new Audio();
+      aud.preload = 'auto';
+      aud.src = url;
+      AUDIO_CACHE.set(speakText, url);
+    }
+  });
+}
+
+function setTalkingVisual(custId, on){
+  document.querySelectorAll('.cust.talking').forEach(el => el.classList.remove('talking'));
+  if(on && custId){
+    const el = document.querySelector(`.cust[data-id="${custId}"]`);
+    if(el) el.classList.add('talking');
+  }
+}
+
+function showSpeechBanner(face, l, fb){
+  const e=$('say');
+  e.classList.remove('on');
+  void e.offsetWidth;
+  const portraitHTML = face && (face.endsWith('.png') || face.endsWith('.jpg'))
+    ? `<img src="${face}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid #f5b82e;flex:none" onerror="this.outerHTML='<b>${fb||'🧑🏽'}</b>'">`
+    : `<b>${face||'👨🏽‍🍳'}</b>`;
+  e.innerHTML=`${portraitHTML}<span>${l[0]}<small>${l[1]}</small></span>`;
+  e.classList.add('on');
+  if(G) G.sayT = 3.2;
+}
+
+function enqueueSpeech(item){
+  // Deduplicate if same customer already queued for same category
+  if(item.c && VOICE_QUEUE.some(q => q.c && q.c.id === item.c.id && q.kind === item.kind)) return;
+  // Cap queue length at 3 so stale lines don't pile up infinitely
+  if(VOICE_QUEUE.length >= 3) VOICE_QUEUE.shift();
+  VOICE_QUEUE.push(item);
+  processVoiceQueue();
+}
+
+function processVoiceQueue(){
+  if(IS_SPEAKING || VOICE_QUEUE.length === 0) return;
+  if(G && (G.paused || G.over)){
+    VOICE_QUEUE = [];
+    return;
+  }
+
+  const item = VOICE_QUEUE.shift();
+  // Skip if customer already left the stall before their turn to speak (except 'sigh' goodbye)
+  if(item.c && item.kind !== 'sigh' && G && !G.cust.some(x => x.id === item.c.id)){
+    processVoiceQueue();
+    return;
+  }
+
+  IS_SPEAKING = true;
+  const {face, l, kind, c} = item;
+  showSpeechBanner(face, l, c ? c.f.fb : '🧑🏽');
+
+  if(c && kind){
+    expr(kind, c.f.p);
+    setTalkingVisual(c.id, true);
+  }
+
+  const finishTurn = () => {
+    setTalkingVisual(null, false);
+    ACTIVE_AUDIO = null;
+    // Small natural pause (220ms) before the next customer speaks
+    setTimeout(() => {
+      IS_SPEAKING = false;
+      processVoiceQueue();
+    }, 220);
+  };
+
+  if(!S.set.voice || S.set.sfx <= 0){
+    setTimeout(finishTurn, 1100);
+    return;
+  }
+
+  const speakText = l[2] || l[1];
+  const cachedUrl = AUDIO_CACHE.get(speakText) || `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(speakText)}&tl=ar&client=tw-ob`;
+
+  let settled = false;
+  const safeFinish = () => {
+    if(settled) return;
+    settled = true;
+    finishTurn();
+  };
+
+  // Safety timeout so queue can never stall even if network/audio hangs
+  const guardTimer = setTimeout(safeFinish, 3600);
+
+  const runSpeechSynthesisFallback = () => {
+    if(!window.speechSynthesis){
+      clearTimeout(guardTimer);
+      setTimeout(safeFinish, 1000);
+      return;
+    }
+    try{
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(speakText);
+      u.lang = 'ar-MA';
+      u.pitch = c ? c.f.p : 1.0;
+      u.rate = c ? (c.f.rate || 1.0) : 1.0;
+      u.volume = Math.min(1, S.set.sfx);
+      u.onend = () => { clearTimeout(guardTimer); safeFinish(); };
+      u.onerror = () => { clearTimeout(guardTimer); safeFinish(); };
+      speechSynthesis.speak(u);
+    }catch(e){
+      clearTimeout(guardTimer);
+      safeFinish();
+    }
+  };
+
+  try{
+    const audio = new Audio(cachedUrl);
+    ACTIVE_AUDIO = audio;
+    audio.volume = Math.min(1, S.set.sfx);
+    // Slight playback rate variation per customer persona for natural variety
+    if(c && c.f.rate) audio.playbackRate = c.f.rate;
+    audio.onended = () => { clearTimeout(guardTimer); safeFinish(); };
+    audio.onerror = () => runSpeechSynthesisFallback();
+    const playPromise = audio.play();
+    if(playPromise !== undefined){
+      playPromise.catch(() => runSpeechSynthesisFallback());
+    }
+  }catch(e){
+    runSpeechSynthesisFallback();
+  }
+}
+
+/* Dynamic Arabian traditional melody with level transposition & tempo variation */
+const SC_BASE=[293.66,311.13,369.99,392,440,466.16,523.25,587.33];
+const PH=[[[0,4],[2,5],[4,4],[6,2],[8,3],[10,2],[12,1],[14,0],[16,4],[18,5],[20,6],[22,5],[24,4],[26,2],[28,1],[30,0]],
+[[0,0],[3,1],[4,2],[6,3],[8,4],[12,3],[14,2],[16,1],[17,2],[18,3],[20,4],[22,5],[24,7],[26,6],[28,4],[30,3]],
+[[0,7],[2,6],[4,4],[6,5],[8,4],[10,3],[12,2],[14,1],[16,0],[20,1],[22,2],[24,4],[28,3],[30,1]]];
+const BASS={0:73.42,3:73.42,6:98,8:73.42,11:110,14:98,16:73.42,19:73.42,22:98,24:73.42,27:110,30:98};
+let mus={on:false,step:0,next:0,ph:0};
+function pluck(f,t,d,v,type,lp){const a=ac(),o=a.createOscillator(),fl=a.createBiquadFilter(),g=a.createGain();o.type=type;o.frequency.value=f;fl.type='lowpass';fl.frequency.value=lp;
+ g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(fl);fl.connect(g);g.connect(MB);o.start(t);o.stop(t+d+.02)}
+function mnote(s,t){
+  const m=s%16;
+  const lv = G ? G.i : 0;
+  const scaleMult = Math.pow(2, (lv % 3) / 12);
+  const SC = SC_BASE.map(f => f * scaleMult);
+
+  if([0,6,8,14].includes(m)||(s===30)){const a=ac(),o=a.createOscillator(),g=a.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(60,t+.12);g.gain.setValueAtTime(.9,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.connect(g);g.connect(MB);o.start(t);o.stop(t+.22)}
+  if([4,10,12].includes(m)||s===29||s===31)noise(.06,2500,.35,t-AC.currentTime,MB);
+  if(m===2||m===13)noise(.04,1800,.12,t-AC.currentTime,MB);
+  if(BASS[s])pluck(BASS[s]*scaleMult,t,.4,.5,'triangle',500);
+  if(s===0)mus.ph=Math.floor(Math.random()*PH.length);
+  for(const [st,i] of PH[mus.ph])if(st===s){pluck(SC[i],t,.45,.28,'sawtooth',1800);pluck(SC[i]*2.005,t,.3,.07,'triangle',3000)}
+}
+function sched(){
+  if(!mus.on)return;
+  const a=ac();
+  const tempo = 92 + (G ? G.i * 3 : 0);
+  while(mus.next<a.currentTime+.15){
+    mnote(mus.step,mus.next);
+    mus.next+=60/tempo/4;
+    mus.step=(mus.step+1)%32;
+  }
+}
+function musicStart(){if(mus.on)return;const a=ac();mus.on=true;mus.next=a.currentTime+.1;setInterval(sched,40)}
+
+/* ---------- scene art ---------- */
+function drawScene(){let s=`<defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a2a5c"/><stop offset=".5" stop-color="#e58a5b"/><stop offset="1" stop-color="#f6c27a"/></linearGradient>
+<radialGradient id="gl"><stop offset="0" stop-color="#ffd27a"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></radialGradient>
+<pattern id="zz" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M0 8L8 0L16 8L8 16Z" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="1.5"/></pattern></defs>
+<rect width="400" height="360" fill="url(#sk)"/>
+<g fill="#8c4a3a" opacity=".9"><rect x="290" y="80" width="36" height="170"/><rect x="298" y="60" width="20" height="22"/><rect x="305" y="48" width="6" height="14"/><circle cx="308" cy="43" r="5" fill="#d9a441"/></g>
+<g fill="#5a3a2a"><path d="M42 260L47 150L52 260Z"/><path d="M47 150Q22 148 8 166Q28 154 47 160Q66 154 86 166Q72 148 47 150Z"/></g>
+<rect y="175" width="400" height="185" fill="#b5532f"/><rect y="175" width="400" height="185" fill="url(#zz)"/>
+<path d="M110 300V215Q110 165 165 165Q220 165 220 215V300Z" fill="#2a120d"/><path d="M121 300V217Q121 177 165 177Q209 177 209 217V300Z" fill="#ffb25a" opacity=".5"/>`;
+ [[10,190,'#c4352b'],[236,195,'#1f6f8b'],[300,185,'#d9a441'],[352,200,'#7d3a7a']].forEach(([x,y,c])=>{s+=`<rect x="${x}" y="${y}" width="38" height="70" fill="${c}"/><rect x="${x}" y="${y}" width="38" height="70" fill="url(#zz)"/><path d="M${x} ${y+70}h38" stroke="#fff6" stroke-dasharray="3 3"/>`});
+ for(let i=0;i<10;i++){const c=i%2?'#fff3df':'#c4352b';s+=`<rect x="${i*40}" y="0" width="40" height="40" fill="${c}"/><circle cx="${i*40+20}" cy="40" r="20" fill="${c}"/>`}
+ [[60,60],[190,66],[330,58]].forEach(([x,y],i)=>{s+=`<g class="ln" style="animation-delay:${i*.6}s"><line x1="${x}" y1="56" x2="${x}" y2="${y}" stroke="#2a120d"/><circle cx="${x}" cy="${y+16}" r="30" fill="url(#gl)"/><path d="M${x-8} ${y+4}h16l4 8v14l-4 6h-16l-4-6v-14z" fill="#e0a43a" stroke="#5a2a10"/><rect x="${x-3}" y="${y+10}" width="6" height="14" fill="#fff0b0"/></g>`});
+ s+=`<rect y="300" width="400" height="60" fill="#7a4330"/><path d="M0 312h400M0 330h400M0 348h400" stroke="#0003"/>`;
+ $('bg').innerHTML=s;
+ $('wks').innerHTML=['🚶🏽','🚶🏽‍♀️','🧍🏽','🚶🏽‍♂️','🛵'].map((e,i)=>`<span class="wk" style="top:${34+i*4}%;font-size:${20+i%3*4}px;animation-duration:${14+i*4}s;animation-delay:-${i*5}s">${e}</span>`).join('')}
+
+/* ---------- screens ---------- */
+let G=null;
+function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));clearVoiceQueue();
+ if(id==='title')$('tb').textContent='Best: '+Math.max(...S.best)+' DH · Bank: '+S.money+' DH';if(id==='sel')rSel();if(id==='shop')rShop()}
+function rSel(){$('lvs').innerHTML=R.map((r,i)=>{const ok=i<S.unl;return `<button class="card${ok?'':' lock'}" ${ok?`data-lv="${i}"`:''}><span class="em2">${ok?r.e:'🔒'}</span><span><b>Level ${i+1} · ${r.n} ${r.ar}</b><small>${i?'New recipe + all earlier ones · ':''}${r.d} · ${Math.min(4,i+1)} customer${i?'s':''} · goal ${GOAL[i]}${S.best[i]?' · best '+S.best[i]+' DH':''}</small></span></button>`}).join('')}
+const UP=[['fry','🔥','Fryer & Steamer','Cooks 22% faster per tier',[60,140,300]],['zel','🧩','Zellige Counter','Customers wait 12% longer per tier',[80,180,350]],['lamp','🏮','Lanterns','Tips +25% per tier',[50,120,260]]];
+function rShop(){$('sm').textContent='💰 '+S.money+' DH';$('ups').innerHTML=UP.map(([k,e,n,d,c])=>{const t=S.up[k],max=t>=3;return `<div class="up"><span class="em2">${e}</span><div><b>${n} ${'⭐'.repeat(t)}${'☆'.repeat(3-t)}</b>${d}</div><button class="btn" data-up="${k}" ${max||S.money<c[t]?'disabled':''}>${max?'MAX':c[t]+' DH'}</button></div>`}).join('')}
+function start(i){clearVoiceQueue();G={i,served:0,goal:GOAL[i],rep:50,combo:0,bestCombo:0,earned:0,tips:0,arr:.4,plate:[],cook:{},sel:null,uid:0,paused:false,over:false,cust:[],sayT:0,max:Math.min(4,i+1),pr:i};
+ $('say').classList.remove('on');$('ov').classList.remove('on');show('game');rHUD();rPlate();rCust();
+ say('👨🏽‍🍳',i?['New recipe: '+R[i].n+' '+R[i].e,'وصفة جديدة: '+R[i].ar]:["Tap the order's ingredients, then SERVE!","ركّب الطلب ثم قدّم!"])}
+const btn=k=>`<button class="ing" data-k="${k}"><s></s><span class="ie">${ic(k)}</span><span class="in">${ING[k][0]}</span></button>`;
+function rPanel(){const c=G.cust.find(x=>x.id===G.sel);if(c)G.pr=c.ri;const r=R[G.pr];
+ $('ings').innerHTML=`<div class="lbl">${r.e} ${r.n} ${r.ar}</div>`+r.b.map(btn).join('')+'<div class="lbl">Extras · زيادة — only if the customer asks!</div>'+r.x.map(btn).join('');rPlate()}
+function rHUD(){$('hm').textContent='💰'+S.money;$('hr').style.width=Math.max(0,Math.min(100,G.rep))+'%';$('hg').textContent='L'+(G.i+1)+' · '+G.served+'/'+G.goal+(G.combo>1?' 🔥x'+G.combo:'')}
+function rPlate(){$('plate').innerHTML=G.plate.map(k=>`<span>${ic(k)}</span>`).join('');$('pname').textContent=G.plate.length?G.plate.map(k=>ING[k][0]).join(' + '):'Empty plate — build the order!';
+ $('steam').classList.toggle('on',G.plate.some(k=>HOT.includes(k)));document.querySelectorAll('.ing').forEach(b=>b.classList.toggle('used',G.plate.includes(b.dataset.k)))}
+function rCust(){
+  $('custs').innerHTML=G.cust.map(c=>{
+    const r=R[c.ri];
+    const h=`<div class="cust${c.id===G.sel?' sel':''}${c.fresh?' in':''}" data-id="${c.id}">
+      <div class="av">
+        <div class="hd"><img src="${c.f.e}" alt="" onerror="this.style.display='none';this.parentNode.textContent='${c.f.fb}'"></div>
+        <div class="bd" style="--c:${c.f.c}"></div>
+        <i class="mood">😊</i>
+      </div>
+      <div class="pb"><b></b></div>
+      <div class="rn">${r.n}</div>
+      <div class="ord">${c.ord.need.map(k=>`<span>${ic(k)}</span>`).join('')}${c.ord.no?`<span class="no">🚫${ic(c.ord.no)}</span>`:''}</div>
+    </div>`;
+    c.fresh=false;
+    return h;
+  }).join('');
+  rPanel();
+}
+function say(face,l,kind,c){
+  if(c && kind){
+    // Queue customer dialogue so customers never talk over each other
+    enqueueSpeech({face, l, kind, c});
+  } else {
+    // Chef tutorial banner (only if no customer is currently speaking)
+    if(!IS_SPEAKING && VOICE_QUEUE.length === 0){
+      showSpeechBanner(face, l, '👨🏽‍🍳');
+    }
+  }
+}
+function fx(t,c){const a=$('app').getBoundingClientRect();let x=a.width/2,y=a.height*.4;if(c){const r=c.getBoundingClientRect();x=r.left-a.left+r.width/2;y=r.top-a.top}const e=document.createElement('div');e.className='fx';e.textContent=t;e.style.left=x+'px';e.style.top=y+'px';$('app').appendChild(e);setTimeout(()=>e.remove(),1150)}
+function ghost(el,cls){if(!el)return;const a=$('app').getBoundingClientRect(),r=el.getBoundingClientRect(),g=el.cloneNode(true);g.classList.remove('in','sel','talking');g.classList.add('ghost',cls);g.style.cssText=`position:absolute;left:${r.left-a.left}px;top:${r.top-a.top}px;width:${r.width}px;z-index:8`;$('app').appendChild(g);setTimeout(()=>g.remove(),700)}
+function fly(c){const el=elOf(c);if(!el)return;const a=$('app').getBoundingClientRect(),p=$('plate').getBoundingClientRect(),t=el.getBoundingClientRect(),e=document.createElement('div');e.className='fly';e.textContent=R[c.ri].e;
+ e.style.left=(p.left-a.left+p.width/2)+'px';e.style.top=(p.top-a.top+p.height/2)+'px';$('app').appendChild(e);
+ requestAnimationFrame(()=>{e.style.transform=`translate(calc(-50% + ${t.left-p.left+t.width/2-p.width/2}px),calc(-50% + ${t.top-p.top}px)) scale(.6) rotate(360deg)`;e.style.opacity=.2});setTimeout(()=>e.remove(),600)}
+function chef(c){const e=$('chef');e.classList.remove('cheer','oops');void e.offsetWidth;e.classList.add(c)}
+function mkCust(){const i=G.i,ri=i&&Math.random()<.4?i:Math.floor(Math.random()*(i+1)),r=R[ri],p=Math.min(.75,.25+.05*G.served+.02*i);
+ const ex=r.x.filter(()=>Math.random()<p),rest=r.x.filter(k=>!ex.includes(k)),used=new Set(G.cust.map(x=>x.f.e)),avail=FA.filter(x=>!used.has(x.e)),f=rnd(avail.length?avail:FA);
+ const c={id:++G.uid,f,ri,fresh:true,said:false,ord:{need:[...r.b,...ex],no:rest.length&&Math.random()<.5?rnd(rest):null,ex:ex.length}};
+ c.maxP=(24+4*c.ord.need.length)*(1+.12*S.up.zel)*Math.max(.62,1-.03*i-.01*G.served);c.p=1;G.cust.push(c);if(!G.sel)G.sel=c.id;rCust();beep(700,.08);say(f.e,rnd(LN.g),'greet',c)}
+const elOf=c=>document.querySelector(`.cust[data-id="${c.id}"]`);
+function addIng(k){if(!G||G.paused||G.over)return;if(G.plate.includes(k)||k in G.cook){beep(160,.08,'square');return}
+ beep(520,.05);if(ING[k][2])G.cook[k]=0;else{G.plate.push(k);rPlate()}}
+function clearPlate(){G.plate=[];G.cook={};document.querySelectorAll('.ing s').forEach(s=>s.style.width=0);rPlate()}
+function serve(){if(!G||G.paused||G.over)return;const c=G.cust.find(x=>x.id===G.sel);
+ if(!c){fx('No customer yet!');return}if(!G.plate.length){fx('Plate is empty!');beep(160,.1,'square');return}
+ const need=[...c.ord.need].sort().join(),have=[...G.plate].sort().join(),el=elOf(c);
+ if(need===have){G.combo++;G.bestCombo=Math.max(G.bestCombo,G.combo);const price=R[c.ri].price+3*c.ord.ex;
+  const tip=Math.round(price*.6*Math.max(0,c.p)*(1+.25*S.up.lamp))+(G.combo-1)*2;S.money+=price+tip;G.earned+=price+tip;G.tips+=tip;
+  G.rep=Math.min(100,G.rep+(c.p>.5?5:2));G.served++;fly(c);fx('+'+(price+tip)+' DH'+(tip?' (tip '+tip+')':''),el);jingle([523,659,784]);chef('cheer');
+  const em=el;setTimeout(()=>ghost(em,'gok'),450);
+  say(c.f.e,rnd(LN.h),'happy',c);G.cust=G.cust.filter(x=>x!==c);G.sel=G.cust.length?G.cust[0].id:null}
+ else{const m=c.ord.need.filter(k=>!G.plate.includes(k)),x=G.plate.filter(k=>!c.ord.need.includes(k));
+  G.combo=0;G.rep-=5;c.p=Math.max(.06,c.p-.3);beep(150,.25,'sawtooth');fx('❌ Wrong!',el);chef('oops');
+  say(c.f.e,x.includes('harissa')?rnd(LN.nh):m.includes('oil')?rnd(LN.fz):(m.includes('harissa')||m.includes('cumin'))?rnd(LN.zc):rnd(LN.a),'angry',c)}
+ clearPlate();rCust();rHUD();
+ if(G.served>=G.goal)end(true);else if(G.rep<=0)end(false)}
+function end(win){G.over=true;clearVoiceQueue();const bonus=win?25*(G.i+1):0;if(win){S.money+=bonus;S.unl=Math.max(S.unl,Math.min(10,G.i+2))}
+ S.best[G.i]=Math.max(S.best[G.i]||0,G.earned+bonus);sv();const st=Math.max(1,Math.ceil(G.rep/20));
+ $('res').innerHTML=`<div class="res"><div class="big">${win?'🏆':'😞'}</div><h1>${win?"Tbarkellah a l'M3allem!":'Safi, the stall closed...'}</h1><div>${win?'تبارك الله عليك!':'الله يعوض'}</div>
+ <div>${win?'⭐'.repeat(st)+'☆'.repeat(5-st):''}</div><div>Served ${G.served}/${G.goal} · Earned ${G.earned} DH (tips ${G.tips})<br>Best combo x${G.bestCombo}${win?' · Bonus +'+bonus+' DH':''}</div>
+ ${win&&G.i<9?'<button class="btn" data-go="next">Next recipe ➜</button>':''}${win&&G.i===9?'<div style="font-size:20px">🎉 You are the famous M3allem of Marrakech! 🎉</div>':''}<button class="btn ${win&&G.i<9?'alt':''}" data-go="retry">↻ Play again</button><button class="btn alt" data-go="shop">🏮 Stall Shop</button><button class="btn alt" data-go="sel">☰ Levels</button></div>`;
+ jingle(win?[523,659,784,1047]:[300,240,180],win?'triangle':'sawtooth');show('res')}
+let last=0;
+function tick(now){requestAnimationFrame(tick);const dt=Math.min(.1,(now-last)/1000);last=now;if(!G||G.paused||G.over)return;
+ if(!IS_SPEAKING && G.sayT>0 && (G.sayT-=dt)<=0)$('say').classList.remove('on');
+ if(G.cust.length<G.max){G.arr-=dt;if(G.arr<=0){mkCust();G.arr=2.5+Math.random()*2.5}}else G.arr=Math.max(G.arr,1.5);
+ if(!G.cust.length)G.arr=Math.min(G.arr,1);
+ for(const k in G.cook){G.cook[k]+=dt;const dur=ING[k][2]*(1-.22*S.up.fry),b=document.querySelector(`.ing[data-k="${k}"] s`);
+  if(G.cook[k]>=dur){delete G.cook[k];G.plate.push(k);if(b)b.style.width=0;beep(660,.1);rPlate()}else if(b)b.style.width=(G.cook[k]/dur*100)+'%'}
+ let left=false;for(const c of [...G.cust]){c.p-=dt/c.maxP;const el=elOf(c);
+  if(c.p<=0){G.cust=G.cust.filter(x=>x!==c);if(G.sel===c.id)G.sel=G.cust.length?G.cust[0].id:null;G.combo=0;G.rep-=12;fx('😡 Left!',el);ghost(el,'gbad');beep(120,.4,'sawtooth');chef('oops');say(c.f.e,rnd(LN.to),'sigh',c);left=true;continue}
+  if(!c.said&&c.p<.4){c.said=true;say(c.f.e,rnd(LN.i),'imp',c)}
+  if(el){const n=c.p>.6?1:c.p>.4?2:c.p>.2?3:4;el.querySelector('.pb b').style.cssText=`width:${c.p*100}%;background:${c.p>.6?'#3fbf5f':c.p>.3?'#f5b82e':'#d62f2f'}`;
+   el.querySelector('.mood').textContent=['😊','😐','😤','😡'][n-1];el.className=el.className.replace(/ m\d/,'')+' m'+n}}
+ if(left){rCust();rHUD();if(G.rep<=0)end(false)}}
+requestAnimationFrame(tick);
+function pause(on){if(!G||G.over)return;G.paused=on;const o=$('ov');o.classList.toggle('on',on);if(on)clearVoiceQueue();
+ if(on)o.innerHTML=`<h1>⏸ Paused</h1><button class="btn" data-go="resume">▶ Resume</button><button class="btn alt" data-go="set">⚙ Settings</button><button class="btn alt" data-go="retry">↻ Restart</button><button class="btn alt" data-go="sel">☰ Quit to levels</button>`}
+function openSet(on){if(on){$('vm').value=S.set.music*100;$('vs').value=S.set.sfx*100;$('vv').checked=S.set.voice}else{sv();}$('set').classList.toggle('on',on)}
+$('vm').oninput=e=>{S.set.music=e.target.value/100;vol()};$('vs').oninput=e=>{S.set.sfx=e.target.value/100;vol();beep(660,.08)};
+$('vv').onchange=e=>{S.set.voice=e.target.checked;if(S.set.voice){clearVoiceQueue();enqueueSpeech({face:'cust_1.png',l:LN.h[0],kind:'happy',c:{id:0,f:FA[0]}})}};
+$('app').addEventListener('click',e=>{ac();musicStart();const t=e.target.closest('[data-go],[data-lv],[data-up],.ing,.cust,#serve,#bin');if(!t)return;
+ if(t.dataset.lv!==undefined){start(+t.dataset.lv);return}
+ if(t.dataset.up){const k=t.dataset.up,u=UP.find(x=>x[0]===k),c=u[4][S.up[k]];if(S.up[k]<3&&S.money>=c){S.money-=c;S.up[k]++;sv();jingle([523,784]);rShop()}return}
+ if(t.classList.contains('ing')){addIng(t.dataset.k);return}
+ if(t.classList.contains('cust')){if(G&&!G.paused){G.sel=+t.dataset.id;document.querySelectorAll('.cust').forEach(c=>c.classList.toggle('sel',+c.dataset.id===G.sel));rPanel();beep(600,.04)}return}
+ if(t.id==='serve'){serve();return}
+ if(t.id==='bin'){if(G&&!G.paused&&!G.over){clearPlate();beep(250,.08)}return}
+ const g=t.dataset.go;
+ if(g==='set'){openSet(true);return}if(g==='setx'){openSet(false);return}
+ if(g==='pause'){pause(true);return}if(g==='resume'){pause(false);return}
+ if(g==='retry'){start(G.i);return}if(g==='next'){start(G.i+1);return}
+ if(g==='sel'||g==='title'||g==='shop'){if(g==='sel'||g==='title'||g==='shop'){if(G){G.over=true;G=null;$('ov').classList.remove('on')}show(g)}}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){if(G&&!G.over&&!G.paused)pause(true);try{AC&&AC.suspend()}catch(e){}}else try{AC&&AC.resume()}catch(e){}});
+drawScene();
+preloadDarijaVoices();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></body></html>
